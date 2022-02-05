@@ -18,44 +18,38 @@ class App extends Component {
     const accounts = await web3.eth.getAccounts()
     this.setState({ account : accounts[0]})
 
-    const netwrokId = await web3.eth.net.getId()
-
-    const TetherTokenData = TetherToken.networks[netwrokId]
+    const networkId = await web3.eth.net.getId()
+    console.log(`DEBUG -> NETWORK ID: ${networkId}`)
+    const TetherTokenData = TetherToken.networks[networkId]
 
     if(TetherTokenData){
-
       const tetherToken = new web3.eth.Contract(TetherToken.abi,TetherTokenData.address)
       this.setState({tetherToken})
       let tethertokenbalance = await tetherToken.methods.balance(this.state.account).call()
       this.setState({ tethertokenbalance : tethertokenbalance.toString() })
-
     }else {
-      window.alert('Tether token contract not deployed to detected network.')
+      window.alert('DEBUG: ...Wala ang TETHER token contract ani nga network...')
     }
 
-    const DummyTokenData = DummyToken.networks[netwrokId]
+    const DummyTokenData = DummyToken.networks[networkId]
 
     if(DummyTokenData){
-
       const dummyToken = new web3.eth.Contract(DummyToken.abi,DummyTokenData.address)
       this.setState({dummyToken})
       let dummytokenbalance = await dummyToken.methods.balance(this.state.account).call()
       this.setState({dummytokenbalance : dummytokenbalance.toString()})
-
     }else {
-      window.alert('Dummy token contract not deployed to detected network.')
+      window.alert('DEBUG: ... Wala ang DUMMY token ani nga network')
     }
 
-    const StakingDappData = DummyToken.networks[netwrokId]
-
+    const StakingDappData = DummyToken.networks[networkId]
     if(StakingDappData){
-
       const stakingdapp = new web3.eth.Contract(StakingDapp.abi,StakingDappData.address)
       this.setState({stakingdapp})
       let stakingdappbalance = await stakingdapp.methods.stakingBalance(this.state.account).call()
       this.setState({stakingdappbalance : stakingdappbalance.toString()})
     }else {
-      window.alert('Staking Dapp contract not deployed to detected network.')
+      window.alert('DEBUG: ... wala nag STAKING DAPP na token ani nga network')
     }
 
     this.setState({ loading: false })
@@ -71,6 +65,37 @@ class App extends Component {
       window.web3 = new Web3(window.web3.currentProvider)
     } else {
       console.alert("DEBUG: Browser is not compatible with ethereum...")
+    }
+  }
+
+  stakeTokens = (amount) =>{
+    this.setState({loading: true})
+    this.state.tetherToken.methods.approve(this.state.stakingdapp._address, amount).send({from: this.state.account}).on('transactionHash', (hash) => {
+      this.state.stakingdapp.methods.stakeTokens(amount).send({from:this.state.account}).on('transactionHash', (hash) => {
+        this.setState({loading:false})
+      })
+    })
+  }
+
+  unstakeTokens = (amount) =>{
+    this.setState({loading: true})
+    this.state.stakingdapp.methods.unstakeTokens().send({from:this.state.account}).on('transactionHash', (hash) =>{
+      this.setState({loading: false})
+    })
+  }
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      account:  '0x0',
+      tetherToken:{},
+      dummyToken:{},
+      stakingdapp:{},
+      tethertokenbalance: '0',
+      dummytokenbalance: '0',
+      stakingdappbalance: '0',
+      loading: true
+
     }
   }
 
