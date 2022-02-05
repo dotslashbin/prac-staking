@@ -28,7 +28,7 @@ class App extends Component {
       let tethertokenbalance = await tetherToken.methods.balance(this.state.account).call()
       this.setState({ tethertokenbalance : tethertokenbalance.toString() })
     }else {
-      window.alert('DEBUG: ...Wala ang TETHER token contract ani nga network...')
+      this.state.logs.push('DEBUG: ...Wala ang TETHER token contract ani nga network...')
     }
 
     const DummyTokenData = DummyToken.networks[networkId]
@@ -39,7 +39,7 @@ class App extends Component {
       let dummytokenbalance = await dummyToken.methods.balance(this.state.account).call()
       this.setState({dummytokenbalance : dummytokenbalance.toString()})
     }else {
-      window.alert('DEBUG: ... Wala ang DUMMY token ani nga network')
+      this.state.logs.push('DEBUG: ... Wala ang DUMMY token ani nga network')
     }
 
     const StakingDappData = DummyToken.networks[networkId]
@@ -49,7 +49,7 @@ class App extends Component {
       let stakingdappbalance = await stakingdapp.methods.stakingBalance(this.state.account).call()
       this.setState({stakingdappbalance : stakingdappbalance.toString()})
     }else {
-      window.alert('DEBUG: ... wala nag STAKING DAPP na token ani nga network')
+      this.state.logs.push('DEBUG: ... wala nag STAKING DAPP na token ani nga network')
     }
 
     this.setState({ loading: false })
@@ -94,20 +94,39 @@ class App extends Component {
       tethertokenbalance: '0',
       dummytokenbalance: '0',
       stakingdappbalance: '0',
-      loading: true
-
+      loading: true,
+      logs: []
     }
   }
 
   render() {
+
     return (
       <div className="App">
-        <header className="App-header">
-          HEADER LANG
-        </header>
-        <div>
-          haha a class component for the longest time
+        <div style={{ margin: '30px', border: '1px solid red'}}>
+          { this.state.logs.map(message => (<div>{ message }</div>)) }
         </div>
+        
+        { this.state.loading? (
+        <>
+          LOADING PA .... 
+        </>): (
+          <>
+            <div>
+              Account CA: { this.state.account }
+            </div>
+            <div>
+              Tether balance: { this.state.tethertokenbalance }
+            </div>
+            <div>
+              Dummy Token Balance: { this.state.dummytokenbalance }
+            </div>
+            <div>
+              Staking balance: { this.state.stakingdappbalance }
+            </div>
+          </>
+        )}
+        
       </div>
     );
   }
