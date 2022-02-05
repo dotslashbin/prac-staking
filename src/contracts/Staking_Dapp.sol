@@ -7,15 +7,15 @@ import "./Tether_Token.sol";
 contract Staking_Dapp {
 	string public name = "Staking Dapp"; 
 	address public owner;
-	Dummy public dummy_token; 
-	Tether public tether_token;
+	Dummy_Token public dummy_token; 
+	Tether_Token public tether_token;
 
 	address[] public stakers;
 	mapping(address => uint) public stakingBalance;
 	mapping(address => bool) public hasStaked;
 	mapping(address => bool) public isStaking;
 
-	constructor(Dummy _dummyToken, Tether _tetherToken) public {
+	constructor(Dummy_Token _dummyToken, Tether_Token _tetherToken) {
 		dummy_token = _dummyToken;
 		tether_token = _tetherToken; 
 		owner = msg.sender;
